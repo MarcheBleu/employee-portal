@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Le Marché Bleu — Employee Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #F0EAD6;
+      --navy:    #2D3057;
+      --gold:    #C4973A;
+      --gold-lt: #A87A28;
+      --cream:   #FDFAF4;
+      --muted:   #7a7080;
+      --card-bg: #FDFAF4;
+      --border:  rgba(45,48,87,0.14);
+      --text:    #1e1f38;
+    }
+
+    html, body {
+      min-height: 100%;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Montserrat', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── PAGE WRAPPER ── */
+    .page {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 52px 24px 72px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+
+    .wordmark-le {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 1.35rem;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+      display: block;
+      margin-bottom: -4px;
+    }
+
+    .wordmark-main {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+      font-size: clamp(2.6rem, 10vw, 3.6rem);
+      color: var(--navy);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      line-height: 1;
+      display: block;
+    }
+
+    .wordmark-sub {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 300;
+      font-size: 0.62rem;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 10px;
+      display: block;
+    }
+
+
+    .divider {
+      width: 48px;
+      height: 1px;
+      background: var(--gold);
+      margin: 20px auto 0;
+      opacity: 0.5;
+    }
+
+    .portal-label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 18px;
+      display: block;
+    }
+
+    /* ── SECTION HEADING ── */
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 0.78rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+      padding-left: 2px;
+    }
+
+    /* ── CARDS ── */
+    .card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 18px 22px;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--gold);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .card:hover {
+      border-color: rgba(196,151,58,0.45);
+      box-shadow: 0 2px 12px rgba(45,48,87,0.08);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card.disabled {
+      pointer-events: none;
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    .card-text { flex: 1; }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.18rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--navy);
+      display: block;
+      line-height: 1.2;
+    }
+
+    .card-note {
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* ── BADGES ── */
+    .badge {
+      font-size: 0.52rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 2px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .badge-leaders {
+      background: rgba(196,151,58,0.14);
+      color: var(--gold-lt);
+      border: 1px solid rgba(196,151,58,0.4);
+    }
+
+    .badge-soon {
+      background: rgba(45,48,87,0.07);
+      color: var(--muted);
+      border: 1px solid rgba(45,48,87,0.15);
+    }
+
+    /* ── ARROW ICON ── */
+    .arrow {
+      color: var(--gold);
+      font-size: 1rem;
+      opacity: 0.6;
+      flex-shrink: 0;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .card:hover .arrow {
+      transform: translateX(3px);
+      opacity: 1;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .footer-divider {
+      width: 32px;
+      height: 1px;
+      background: var(--border);
+      margin: 0 auto 18px;
+    }
+
+    footer p {
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- HEADER -->
+    <header>
+      <span class="wordmark-le">le</span>
+      <span class="wordmark-main">Marché Bleu</span>
+      <span class="wordmark-sub">Market &amp; Cafe &nbsp;·&nbsp; FW, TX</span>
+      <div class="divider"></div>
+      <span class="portal-label">Employee Portal</span>
+    </header>
+
+    <!-- SECTION: OPERATIONS -->
+    <p class="section-title">Operations</p>
+    <div class="card-list">
+
+      <a class="card" href="https://docs.google.com/forms/d/e/1FAIpQLSei7B1zd6juWi1hacvWJzQlNiE96R8VSvsbiiLWDJ8logvu-g/viewform?usp=header" target="_blank" rel="noopener">
+        <span class="card-text">
+          <span class="card-title">Maintenance Request</span>
+        </span>
+        <span class="arrow">→</span>
+      </a>
+
+      <div class="card disabled">
+        <span class="card-text">
+          <span class="card-title">Incident Report</span>
+        </span>
+        <span class="badge badge-soon">Coming Soon</span>
+      </div>
+
+      <a class="card" href="https://docs.google.com/forms/d/e/1FAIpQLSfUnR6JFynV0GVgH5DGkG7sANdjfqGc7k1xsH_gTr19-quUSQ/viewform?usp=header" target="_blank" rel="noopener">
+        <span class="card-text">
+          <span class="card-title">Accountability Tracker</span>
+        </span>
+        <span class="badge badge-leaders">Leaders Only</span>
+        <span class="arrow">→</span>
+      </a>
+
+      <a class="card" href="https://docs.google.com/forms/d/e/1FAIpQLSei7B1zd6juWi1hacvWJzQlNiE96R8VSvsbiiLWDJ8logvu-g/viewform?usp=header" target="_blank" rel="noopener">
+        <span class="card-text">
+          <span class="card-title">Anonymous Feedback</span>
+        </span>
+        <span class="arrow">→</span>
+      </a>
+
+    </div>
+
+    <!-- SECTION: RESOURCES -->
+    <p class="section-title">Resources</p>
+    <div class="card-list">
+
+      <div class="card disabled">
+        <span class="card-text">
+          <span class="card-title">Drink Recipes</span>
+        </span>
+        <span class="badge badge-soon">Coming Soon</span>
+      </div>
+
+      <div class="card disabled">
+        <span class="card-text">
+          <span class="card-title">Menu Recipes</span>
+        </span>
+        <span class="badge badge-soon">Coming Soon</span>
+      </div>
+
+      <div class="card disabled">
+        <span class="card-text">
+          <span class="card-title">Employee Forms</span>
+          <span class="card-note">W-4, I-9 &amp; more</span>
+        </span>
+        <span class="badge badge-soon">Coming Soon</span>
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-divider"></div>
+      <p>Le Marché Bleu &nbsp;·&nbsp; Fort Worth, TX</p>
+    </footer>
+
+  </div>
+</body>
+</html>
