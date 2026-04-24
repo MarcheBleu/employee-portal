@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Menu & Prep Guide</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f7f5f2;
+      color: #2c2c2c;
+      line-height: 1.5;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #2c2c2c;
+      color: #fff;
+      padding: 28px 32px 20px;
+    }
+    header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: .5px; }
+    header p  { font-size: .9rem; color: #bbb; margin-top: 4px; }
+
+    /* ── Tab nav ── */
+    nav {
+      background: #fff;
+      border-bottom: 1px solid #e0dbd4;
+      padding: 0 24px;
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav a {
+      display: inline-block;
+      padding: 14px 16px;
+      font-size: .85rem;
+      font-weight: 600;
+      color: #666;
+      text-decoration: none;
+      white-space: nowrap;
+      border-bottom: 3px solid transparent;
+    }
+    nav a:hover { color: #2c2c2c; }
+    nav a.active { color: #2c2c2c; border-bottom-color: #b07d3e; }
+
+    /* ── Layout ── */
+    main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
+
+    section { margin-bottom: 56px; scroll-margin-top: 60px; }
+    section > h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #2c2c2c;
+      border-bottom: 2px solid #d4c4a8;
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+    }
+    section > h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #7a5c2e;
+      margin: 28px 0 12px;
+    }
+
+    /* ── Drink/food card ── */
+    .card {
+      background: #fff;
+      border: 1px solid #e8e2d8;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      background: #faf8f4;
+      border-bottom: 1px solid #e8e2d8;
+      cursor: pointer;
+      user-select: none;
+    }
+    .card-header h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      flex: 1;
+    }
+
+    .badge {
+      font-size: .7rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+      background: #e8e2d8;
+      color: #666;
+    }
+    .badge.breakfast { background: #fde8d0; color: #a0491a; }
+    .badge.lunch     { background: #d0e8f8; color: #1a5fa0; }
+    .badge.salad     { background: #d8f0e0; color: #1a7a3e; }
+    .badge.prep      { background: #f0d8f8; color: #5e1a7a; }
+    .badge.wine      { background: #f8d0d8; color: #a01a35; }
+    .badge.beer      { background: #fdf0d0; color: #8a6010; }
+    .badge.special   { background: #d0f0f8; color: #1a6a7a; }
+    .badge.grab      { background: #e8f0e8; color: #2a6a2a; }
+
+    .chevron {
+      font-size: .75rem;
+      color: #999;
+      transition: transform .2s;
+    }
+    .card.open .chevron { transform: rotate(180deg); }
+
+    .card-body { display: none; padding: 20px; }
+    .card.open .card-body { display: block; }
+
+    /* ── Recipe steps ── */
+    .recipe-steps {
+      font-size: .88rem;
+      padding-left: 20px;
+      counter-reset: step;
+      list-style: none;
+    }
+    .recipe-steps > li {
+      counter-increment: step;
+      position: relative;
+      padding: 6px 0 6px 8px;
+      border-bottom: 1px solid #f0ece6;
+    }
+    .recipe-steps > li:last-child { border-bottom: none; }
+    .recipe-steps > li::before {
+      content: counter(step);
+      position: absolute;
+      left: -20px;
+      top: 7px;
+      background: #b07d3e;
+      color: #fff;
+      font-size: .7rem;
+      font-weight: 700;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* sub-notes inside recipe */
+    .recipe-steps .sub {
+      margin-top: 4px;
+      padding-left: 12px;
+      font-size: .82rem;
+      color: #666;
+      list-style: disc;
+    }
+    .recipe-steps .sub li { padding: 2px 0; border: none; }
+
+    /* ── Order type strip ── */
+    .order-type {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px dashed #d4c4a8;
+    }
+    .order-type-item {
+      background: #f7f5f2;
+      border: 1px solid #e0dbd4;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: .82rem;
+    }
+    .order-type-item strong {
+      display: block;
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: #b07d3e;
+      margin-bottom: 2px;
+    }
+
+    /* ── Ingredients summary ── */
+    .ingredients {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .ingredient-chip {
+      font-size: .78rem;
+      background: #f0ece6;
+      border: 1px solid #e0dbd4;
+      border-radius: 20px;
+      padding: 3px 10px;
+      color: #444;
+    }
+
+    /* ── Prep recipe card ── */
+    .prep-recipe {
+      background: #fff;
+      border: 1px solid #e8e2d8;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .prep-recipe-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      background: #faf8f4;
+      border-bottom: 1px solid #e8e2d8;
+      cursor: pointer;
+      user-select: none;
+    }
+    .prep-recipe-header h4 { font-size: 1rem; font-weight: 700; flex: 1; }
+    .prep-recipe.open .chevron { transform: rotate(180deg); }
+    .prep-recipe-body { display: none; padding: 20px; }
+    .prep-recipe.open .prep-recipe-body { display: block; }
+
+    .prep-ingredients {
+      background: #f7f5f2;
+      border: 1px solid #e0dbd4;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+    .prep-ingredients h5 {
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: #b07d3e;
+      margin-bottom: 8px;
+    }
+    .prep-ingredients ul {
+      list-style: none;
+      font-size: .86rem;
+      columns: 2;
+    }
+    .prep-ingredients ul li {
+      padding: 3px 0;
+      border-bottom: 1px solid #ece8e2;
+    }
+    .prep-ingredients ul li::before { content: "· "; color: #b07d3e; }
+
+    .directions-label {
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: #7a5c2e;
+      margin-bottom: 8px;
+    }
+
+    /* ── Wine grid ── */
+    .wine-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .wine-card {
+      background: #fff;
+      border: 1px solid #e8e2d8;
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .wine-card h4 {
+      font-size: .85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: #7a5c2e;
+      margin-bottom: 12px;
+    }
+    .wine-item {
+      display: flex;
+      flex-direction: column;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0ece6;
+      font-size: .86rem;
+    }
+    .wine-item:last-child { border-bottom: none; }
+    .wine-item .wine-name { font-weight: 700; }
+    .wine-item .wine-producer { color: #888; font-size: .78rem; }
+    .wine-item .wine-desc { color: #555; font-style: italic; margin-top: 2px; }
+
+    /* ── Meal deal banner ── */
+    .deal-banner {
+      background: #fdf6e8;
+      border: 1px solid #e6d6b0;
+      border-radius: 10px;
+      padding: 20px 24px;
+      font-size: .88rem;
+      margin-bottom: 20px;
+    }
+    .deal-banner h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #7a5c2e;
+    }
+    .deal-banner .upsell {
+      background: #fff8ed;
+      border-left: 3px solid #b07d3e;
+      padding: 10px 14px;
+      margin: 10px 0;
+      border-radius: 0 6px 6px 0;
+      font-size: .86rem;
+      font-style: italic;
+      color: #444;
+    }
+    .deal-banner ul {
+      list-style: none;
+      margin: 8px 0;
+    }
+    .deal-banner ul li::before { content: "✓  "; color: #7a5c2e; font-weight: 700; }
+    .deal-banner ul li { padding: 3px 0; }
+
+    /* ── Happy Hour banner ── */
+    .hh-banner {
+      background: #f8f0f8;
+      border: 1px solid #d0b0d8;
+      border-radius: 10px;
+      padding: 20px 24px;
+      font-size: .88rem;
+    }
+    .hh-banner h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #5e1a7a;
+    }
+    .hh-deal {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .hh-deal-item {
+      background: #fff;
+      border: 1px solid #d0b0d8;
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-weight: 700;
+      font-size: .9rem;
+      color: #5e1a7a;
+    }
+
+    /* ── Prep guidelines ── */
+    .guideline-card {
+      background: #fff;
+      border: 1px solid #e8e2d8;
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+    .guideline-card h4 {
+      font-size: .9rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #2c2c2c;
+    }
+    .guideline-card p { font-size: .86rem; color: #444; }
+
+    /* ── Wrap note ── */
+    .wrap-note {
+      background: #f0f8f0;
+      border: 1px solid #b0d8b0;
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: .86rem;
+      margin-top: 8px;
+      color: #2a5a2a;
+    }
+    .wrap-note strong { color: #1a7a1a; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🍽️ Menu &amp; Prep Recipe Guide</h1>
+  <p>Reference for team members — Café Food, Prep Recipes, Wine &amp; Beer</p>
+</header>
+
+<nav id="main-nav">
+  <a href="#breakfast-entrees" class="active">Breakfast Entrees</a>
+  <a href="#breakfast-bites">Breakfast Bites</a>
+  <a href="#lunch">Lunch Sandwiches</a>
+  <a href="#salads">Salads &amp; Wraps</a>
+  <a href="#meal-deal">Meal Deal</a>
+  <a href="#grab-and-go">Grab &amp; Go</a>
+  <a href="#food-prep">Food Prep</a>
+  <a href="#prep-guidelines">Prep Guidelines</a>
+  <a href="#wine-beer">Wine &amp; Beer</a>
+  <a href="#happy-hour">Happy Hour</a>
+</nav>
+
+<main>
+
+  <!-- ═══════════════════════════════ BREAKFAST ENTREES ═══════════════════════════════ -->
+  <section id="breakfast-entrees">
+    <h2>Breakfast Entrees</h2>
+
+    <!-- Breakfast Sandwich -->
+    <div class="card open">
+      <div class="card-header" onclick="toggle(this)">
+        <h4>Breakfast Sandwich</h4>
+        <span class="badge breakfast">Bagel or Biscuit</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <ol class="recipe-steps">
+          <li>
+            Cut bagel or biscuit in half.
+            <ul class="sub"><li>If bagel: toast in toaster 1x before assembling.</li></ul>
+          </li>
+          <li>Add 1 egg patty.</li>
+          <li>Add 1 slice American cheese.</li>
+          <li>
+            Add protein of choice.
+            <ul class="sub">
+              <li>Ham: 2 slices</li>
+              <li>Turkey sausage: 1 patty</li>
+            </ul>
+          </li>
+          <li>
+            Place on baking sheet (bagel closed) and cook in convection oven.
+            <ul class="sub">
+              <li>Bagel: 45–60 seconds</li>
+              <li>Biscuit: ~45 seconds</li>
+            </ul>
+          </li>
+          <li>Remove from oven and separate the two halves. Spread 1 oz avocado mash on each side and garnish with Everything Bagel Seasoning, then close the sandwich.</li>
+          <li>Serve wrapped in brown wrapper.</li>
+        </ol>
+        <div class="order-type">
+          <div class="order-type-item"><strong>For Here</strong>Serve on tray</div>
+          <div class="order-type-item"><strong>To-Go</strong>Compostable circle salad bowl</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Avocado Toast -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <h4>Avocado Toast</h4>
+        <span class="badge breakfast">Toast</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <ol class="recipe-steps">
+          <li>Toast 1 slice bread — 2 rounds in toaster.</li>
+          <li>Spread 2 oz avocado spread (~½" thickness) evenly across the bread.</li>
+          <li>Add a handful (~2 oz) of arugula.</li>
+          <li>Layer 2 slices of roasted tomatoes.</li>
+          <li>Sprinkle with Everything Bagel Seasoning.</li>
+          <li>Cut toast in half diagonally.</li>
+        </ol>
+        <div class="order-type">
+          <div class="order-type-item"><strong>For Here</strong>Serve on tray</div>
+          <div class="order-type-item"><strong>To-Go</strong>Rectangle to-go container</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Strawberry Banana Toast -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <h4>Strawberry Banana Toast</h4>
+        <span class="badge breakfast">Toast</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <ol class="recipe-steps">
+          <li>Toast 1 slice bread — 2 rounds in toaster.</li>
+          <li>Spread 2 oz whipped cream cheese evenly across the bread.</li>
+          <li>Alternate rows of sliced banana and sliced strawberries horizontally across the toast.</li>
+          <li>Drizzle with honey.</li>
+          <li>Tear apart mint leaves and use as garnish.</li>
+          <li>Cut toast in half.</li>
+        </ol>
+        <div class="order-type">
+          <div class="order-type-item"><strong>For Here</strong>Serve on tray</div>
+          <div class="order-type-item"><strong>To-Go</strong>Rectangle to-go container</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════ BREAKFAST BITES ═══════════════════════════════ -->
+  <section id="breakfast-bites">
+    <h2>Breakfast Bites</h2>
+    <p style="font-size:.85rem;color:#888;margin-bottom:16px;">Note: Breakfast bites are not included in the Meal Deal.</p>
+
+    <!-- Breakfast Tacos -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <h4>Breakfast Tacos</h4>
+        <span class="badge breakfast">Bites</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <ol class="recipe-steps">
+          <li>Remove tape portion on the wrapper.</li>
+          <li>Cook for 45 seconds–1 minute in convection oven.</li>
+        </ol>
+        <div class="order-type">
+          <div class="order-type-item"><strong>Serve</strong>Pastry bag with customer's choice of salsa</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Egg Bites -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <h4>Egg Bites</h4>
+        <span class="badge breakfast">Bites</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <ol class="recipe-steps">
+          <li>Place 2 egg bites on a baking sheet.</li>
+          <li>Heat in convection oven for 1 minute.</li>
+          <li>Transfer to egg bite tray.</li>
+        </ol>
+        <div class="order-type">
+          <div class="order-type-item"><strong>Serve</strong>Pastry bag</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bagels -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <h4>Bagels</h4>
+        <span class="badge breakfast">Bites</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <ol class="recipe-steps">
+          <li>Slice bagel in half.</li>
+          <li>Toast both halves — 2 rounds in toaster.</li>
+          <li>Grab whipped cream cheese or butter from food fridge.</li>
+        </ol>
+        <div class="order-type">
+          <div class="order-type-item"><strong>Serve</strong>Pastry bag</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Biscuits -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <h4>Biscuits</h4>
+        <span class="badge breakfast">Bites</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <ol class="recipe-steps">
+          <li>Place biscuit on baking sheet.</li>
+          <li>Heat in convection oven for 40 seconds.</li>
+          <li>Grab whipped cream cheese or butter from food fridge.</li>
+        </ol>
+        <div class="order-type">
+          <div class="order-type-item"><strong>Serve</strong>Pastry bag</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════ LUNCH SANDWICHES ═══════════════════════════════ -->
+  <section id="lunch">
+    <h2>Lunch Sandwiches</h2>
+    <p style="font-size:.85rem;color:#888;margin-bottom:16px;">All lunch sandwiches are served with <strong>chips</strong> and a <strong>pickle spear</strong>.</p>
+
+    <!-- Ham & Cheese -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <h4>Toasted Ham and Cheese</h4>
+        <span class="badge lunch">Sourdough</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <ol class="recipe-steps">
+          <li>Toast 2 slices sourdough bread — 2x in toaster.</li>
+          <li>Spread 1 oz balsamic mayo on each slice (2 oz total).</li>
+          <li>Add a pinch of salt and coarse ground pepper to both slices.</li>
+          <li>Add 2 oz parmesan on one slice.</li>
+          <li>Add 2 oz mozzarella on the other slice.</li>
+          <li>Layer 2 slices of ham on each side (4 slices total).</li>
+          <li>Add 2 slices of roasted tomato.</li>
+          <li>Carefully press both sides together.</li>
+          <li>Toast for 1 minute at 475°F.</li>
+          <li>Wrap in brown parchment paper and cut in half diagonally.</li>
+        </ol>
+        <div class="order-type">
+          <div class="order-type-item"><strong>For Here</strong>Tray with parchment paper</div>
+          <div class="order-type-item"><strong>To-Go</strong>To-go container</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pastrami Turkey -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <h4>Pastrami Turkey Sandwich</h4>
+        <span class="badge lunch">Sourdough</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <ol class="recipe-steps">
+          <li>Toast 2 slices sourdough bread — 2x in toaster.</li>
+          <li>Spread 1 oz balsamic mayo on each slice (2 oz total).</li>
+          <li>Add 4–5 pickle slices.</li>
+          <li>Add ⅛ cup sliced red onions.</li>
+          <li>Add 2 slices turkey.</li>
+          <li>Add 2 slices pastrami.</li>
+          <li>Add 2 slices Swiss cheese.</li>
+          <li>Add 2 slices roasted tomato.</li>
+          <li>Carefully press both sides together.</li>
+          <li>Toast for 1 minute at 475°F.</li>
+          <li>Wrap in brown parchment paper and cut in half diagonally.</li>
+        </ol>
+        <div class="order-type">
+          <div class="order-type-item"><strong>For Here</strong>Tray with parchment paper</div>
+          <div class="order-type-item"><strong>To-Go</strong>To-go container</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Turkey Avocado -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <h4>Turkey Avocado Sandwich</h4>
+        <span class="badge lunch">Sourdough</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <ol class="recipe-steps">
+          <li>Toast 2 slices sourdough bread — 2x in toaster.</li>
+          <li>Spread 1 oz balsamic mayo on each slice (2 oz total).</li>
+          <li>Add a pinch of salt and ground black pepper.</li>
+          <li>
+            <strong>Left slice:</strong> Add 2 slices roasted tomato, 4 slices turkey, and 1 slice Swiss cheese.
+            <ul class="sub"><li>Toast this side for 1 minute at 475°F.</li></ul>
+          </li>
+          <li><strong>Right slice:</strong> Spread 2 oz avocado spread and garnish with Everything Bagel Seasoning.</li>
+          <li>Carefully press both sides together.</li>
+          <li>Wrap in brown parchment paper and cut in half diagonally.</li>
+        </ol>
+        <div class="order-type">
+          <div class="order-type-item"><strong>For Here</strong>Tray with parchment paper</div>
+          <div class="order-type-item"><strong>To-Go</strong>To-go container</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap-note">
+      <strong>All sandwiches can be made as a wrap.</strong> Substitute bread with a tortilla and add 4 oz of lettuce. Use all the same ingredients, layered with the lettuce so every bite gets some.
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════ SALADS & WRAPS ═══════════════════════════════ -->
+  <section id="salads">
+    <h2>Salads &amp; Wraps</h2>
+
+    <!-- Caesar Salad -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <h4>Caesar Salad</h4>
+        <span class="badge salad">Salad</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <ol class="recipe-steps">
+          <li>Place 6 oz diced chicken on baking tray and warm in oven for 1 minute.</li>
+          <li>Add 6 oz romaine lettuce to round to-go bowl (fill to ~90%).</li>
+          <li>Add ⅓ cup grated parmesan.</li>
+          <li>Add 6 croutons.</li>
+          <li>Garnish top with ¼ cup shaved parm.</li>
+          <li>Add 4 more croutons.</li>
+          <li>Top with the heated diced chicken.</li>
+          <li>Add a pinch of cracked black pepper.</li>
+          <li>Serve 2 oz Caesar dressing on the side in a to-go container.</li>
+        </ol>
+        <div class="order-type">
+          <div class="order-type-item"><strong>Serve</strong>Round to-go bowl, dressing on the side</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Strawberry Walnut Goat Cheese -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <h4>Strawberry Walnut Goat Cheese Salad</h4>
+        <span class="badge salad">Salad</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <ol class="recipe-steps">
+          <li>Place 6 oz diced chicken on baking tray and warm in oven for 1 minute.</li>
+          <li>Add 6 oz romaine lettuce to round to-go bowl (fill to ~90%).</li>
+          <li>Add ⅛ cup goat cheese crumble.</li>
+          <li>Add ⅓ cup crushed walnuts.</li>
+          <li>Add ¼ cup diced strawberries.</li>
+          <li>Top with the heated diced chicken.</li>
+          <li>Serve 2 oz balsamic vinaigrette on the side in a to-go container.</li>
+        </ol>
+        <div class="order-type">
+          <div class="order-type-item"><strong>Serve</strong>Round to-go bowl, dressing on the side</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chicken Caesar Wrap -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <h4>Chicken Caesar Wrap</h4>
+        <span class="badge salad">Spinach Tortilla</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <ol class="recipe-steps">
+          <li>Lay out 1 spinach tortilla.</li>
+          <li>Spread 2 oz mayo mix in a thin layer.</li>
+          <li>
+            In a bowl, mix together:
+            <ul class="sub">
+              <li>4 oz romaine lettuce</li>
+              <li>⅓ cup grated parmesan</li>
+              <li>2 oz Caesar dressing</li>
+              <li>6 oz heated cooked chicken (cook 1 min on tray)</li>
+              <li>2 oz chopped croutons <em>(exclude for Grab &amp; Go)</em></li>
+              <li>Pinch of cracked black pepper</li>
+            </ul>
+          </li>
+          <li>Place the mixture on the tortilla and wrap like a burrito.</li>
+        </ol>
+        <div class="order-type">
+          <div class="order-type-item"><strong>For Here</strong>Wrap in parchment, cut in half, serve on tray with parchment</div>
+          <div class="order-type-item"><strong>To-Go</strong>Wrap in saran wrap, cut in half, rectangle to-go container</div>
+          <div class="order-type-item"><strong>Grab &amp; Go</strong>Wrap in saran wrap, cut in half, square to-go container — no chips or pickle, no croutons</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════ MEAL DEAL ═══════════════════════════════ -->
+  <section id="meal-deal">
+    <h2>Meal Deal</h2>
+    <div class="deal-banner">
+      <h4>$2 Off an Entree with Any Café Drink</h4>
+      <ul>
+        <li>Valid Monday–Friday only</li>
+        <li>Applies to Breakfast Entrees, Lunch Sandwiches, and Salads &amp; Wraps</li>
+        <li>Does <strong>not</strong> include Breakfast Bites (tacos, egg bites, bagels, biscuits)</li>
+      </ul>
+
+      <p style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#b07d3e;margin:14px 0 6px;">Upsell Scripts — use on every order</p>
+      <div class="upsell">If getting a drink: "Perfect, anything to eat with that? We have a weekday meal deal — which entree would you like to get $2 off today?"</div>
+      <div class="upsell">If getting food: "Anything to drink with that? You can save $2 by adding any café drink."</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ GRAB AND GO ═══════════════════════════════ -->
+  <section id="grab-and-go">
+    <h2>Grab &amp; Go</h2>
+    <p style="font-size:.85rem;color:#888;margin-bottom:16px;">Pre-made items ready for self-serve. No chips or pickle included.</p>
+
+    <!-- Power PBJ -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <h4>Power Peanut Butter &amp; Jelly</h4>
+        <span class="badge grab">Grab &amp; Go</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <ol class="recipe-steps">
+          <li>Spread 1 oz peanut butter on each slice of bread.</li>
+          <li>On the left slice: add 2 oz sliced bananas and a sprinkle of granola.</li>
+          <li>On the right slice: spread 2 oz jelly.</li>
+          <li>Combine both sides and cut in half.</li>
+          <li>Serve in a triangle to-go container.</li>
+          <li>Print and add barcode/label/ingredient sticker.</li>
+          <li>Add date sticker — 2 days after date of creation.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Chicken Caesar Wrap - Grab & Go -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <h4>Chicken Caesar Wrap</h4>
+        <span class="badge grab">Grab &amp; Go</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <ol class="recipe-steps">
+          <li>Lay out 1 spinach tortilla.</li>
+          <li>Spread 2 oz mayo mix in a thin layer.</li>
+          <li>
+            In a bowl, mix together:
+            <ul class="sub">
+              <li>4 oz romaine lettuce</li>
+              <li>⅓ cup grated parmesan</li>
+              <li>2 oz Caesar dressing</li>
+              <li>6 oz heated cooked chicken (cook 1 min on tray)</li>
+              <li>Pinch of cracked black pepper</li>
+              <li><strong>No croutons</strong> for Grab &amp; Go</li>
+            </ul>
+          </li>
+          <li>Place the mixture on the tortilla and wrap like a burrito.</li>
+          <li>Wrap in saran wrap and cut in half.</li>
+          <li>Serve in a square to-go container.</li>
+          <li>Print and add barcode/label/ingredient sticker.</li>
+          <li>Add date sticker.</li>
+        </ol>
+        <div class="order-type">
+          <div class="order-type-item"><strong>Container</strong>Square to-go container — no chips or pickle</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════ FOOD PREP ═══════════════════════════════ -->
+  <section id="food-prep">
+    <h2>Food Prep Recipes</h2>
+
+    <!-- Balsamic Vinaigrette -->
+    <div class="prep-recipe">
+      <div class="prep-recipe-header" onclick="togglePrep(this)">
+        <h4>Balsamic Vinaigrette</h4>
+        <span class="badge prep">Dressing</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="prep-recipe-body">
+        <div class="prep-ingredients">
+          <h5>Ingredients</h5>
+          <ul>
+            <li>2 cups balsamic vinegar</li>
+            <li>½ cup honey</li>
+            <li>2 tbsp salt</li>
+            <li>⅛ cup ground pepper</li>
+            <li>1 cup stone ground mustard</li>
+            <li>1 cup olive oil</li>
+          </ul>
+        </div>
+        <p class="directions-label">Directions</p>
+        <ol class="recipe-steps">
+          <li>Place balsamic vinegar, honey, salt, and pepper in blender. Blend on setting 1.</li>
+          <li>Once blended, add 1 cup olive oil. Blend on setting 1 for 5 seconds. Pause. Blend again for 5 more seconds.</li>
+          <li>Transfer to a plastic container. Label with date made.</li>
+        </ol>
+        <p style="font-size:.8rem;color:#888;margin-top:10px;font-style:italic;">Used for: Strawberry Walnut Goat Cheese Salad</p>
+      </div>
+    </div>
+
+    <!-- Avocado Mash -->
+    <div class="prep-recipe">
+      <div class="prep-recipe-header" onclick="togglePrep(this)">
+        <h4>Avocado Mash</h4>
+        <span class="badge prep">Spread</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="prep-recipe-body">
+        <div class="prep-ingredients">
+          <h5>Ingredients</h5>
+          <ul>
+            <li>15 avocados (pitted)</li>
+            <li>4–6 tsp salt</li>
+            <li>4–6 tsp pepper</li>
+            <li>6–8 tsp Tajín</li>
+            <li>1 tsp garlic powder</li>
+            <li>¼–½ cup lime juice</li>
+          </ul>
+        </div>
+        <p class="directions-label">Directions</p>
+        <ol class="recipe-steps">
+          <li>Place pitted avocado in a large metal bowl.</li>
+          <li>Add salt, pepper, Tajín, garlic powder, and lime juice.</li>
+          <li>Use a large masher to rough-mash the mixture.</li>
+          <li>Finish mixing with a large spatula. Season to taste.</li>
+          <li>Transfer to a plastic container. Label with date made.</li>
+        </ol>
+        <p style="font-size:.8rem;color:#888;margin-top:10px;font-style:italic;">Used for: Avocado Toast and Turkey Avocado Sandwich</p>
+      </div>
+    </div>
+
+    <!-- Balsamic Spicy Mayo -->
+    <div class="prep-recipe">
+      <div class="prep-recipe-header" onclick="togglePrep(this)">
+        <h4>Balsamic Spicy Mayo</h4>
+        <span class="badge prep">Sauce</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="prep-recipe-body">
+        <div class="prep-ingredients">
+          <h5>Ingredients</h5>
+          <ul>
+            <li>2 cups balsamic vinegar</li>
+            <li>4 cups spicy mayo</li>
+            <li>2 cups regular mayo</li>
+          </ul>
+        </div>
+        <p class="directions-label">Directions</p>
+        <ol class="recipe-steps">
+          <li>Combine all ingredients in a blender and blend on setting 1 until fully combined.</li>
+          <li>Once blended, transfer to a large squirt bottle.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Whipped Cream Cheese -->
+    <div class="prep-recipe">
+      <div class="prep-recipe-header" onclick="togglePrep(this)">
+        <h4>Whipped Cream Cheese Spread</h4>
+        <span class="badge prep">Spread</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="prep-recipe-body">
+        <div class="prep-ingredients">
+          <h5>Ingredients</h5>
+          <ul>
+            <li>1 stick cream cheese</li>
+            <li>½ cup whipping cream</li>
+          </ul>
+        </div>
+        <p class="directions-label">Directions</p>
+        <ol class="recipe-steps">
+          <li>In a large mixing bowl, use a handheld mixer to beat cream cheese until smooth.</li>
+          <li>Transfer to plastic tubs. Label with item name, date made, and initials.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Brown Sugar Roasted Tomatoes -->
+    <div class="prep-recipe">
+      <div class="prep-recipe-header" onclick="togglePrep(this)">
+        <h4>Brown Sugar Roasted Tomatoes</h4>
+        <span class="badge prep">Prep</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="prep-recipe-body">
+        <div class="prep-ingredients">
+          <h5>Ingredients</h5>
+          <ul>
+            <li>30 tomatoes, sliced ½" thick</li>
+            <li>1 cup + 3 tbsp brown sugar (+ 3 tbsp for top)</li>
+            <li>1 cup oil</li>
+            <li>1½ cup balsamic vinegar mixture</li>
+            <li>4 tbsp salt</li>
+            <li>3 tbsp pepper</li>
+            <li>3 tbsp Italian seasoning</li>
+          </ul>
+        </div>
+        <p class="directions-label">Directions</p>
+        <ol class="recipe-steps">
+          <li>Slice tomatoes into ½" slices.</li>
+          <li>Marinate overnight in 1 cup brown sugar, salt, 1 cup oil, and ½ cup balsamic vinegar mixture.</li>
+          <li>When ready to cook, lay marinated slices on a foil-lined baking tray.</li>
+          <li>Cook in oven for 2–3 minutes.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Whipped Cream -->
+    <div class="prep-recipe">
+      <div class="prep-recipe-header" onclick="togglePrep(this)">
+        <h4>Whipped Cream</h4>
+        <span class="badge prep">Topping</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="prep-recipe-body">
+        <ol class="recipe-steps">
+          <li>Add 8 pumps vanilla syrup to the large black whipped cream canister.</li>
+          <li>Pour heavy whipping cream and fill to the fill line.</li>
+          <li>Screw the top back on and give it a good shake.</li>
+          <li>Place a cartridge (found in the cabinet under the drip coffee urns) in the designated spot and twist until you hear the gas escape into the canister.</li>
+        </ol>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════ PREP GUIDELINES ═══════════════════════════════ -->
+  <section id="prep-guidelines">
+    <h2>Additional Prep Guidelines</h2>
+
+    <div class="guideline-card">
+      <h4>Romaine Lettuce</h4>
+      <p>Wash and dry the lettuce before cutting. Remove and discard any damaged or unappealing leaves. Cut leaves down the center vein first, then into 1" × 1" sections.</p>
+    </div>
+
+    <div class="guideline-card">
+      <h4>Tomatoes</h4>
+      <p>Wash and clean prior to slicing. Slice to ¼" thickness and place directly in marinating liquid.</p>
+    </div>
+
+    <div class="guideline-card">
+      <h4>Strawberries</h4>
+      <p>Wash and dry before slicing. Discard any damaged or unappealing strawberries. Slice to ⅛" thickness lengthwise (roughly two quarters stacked).</p>
+    </div>
+
+    <div class="guideline-card">
+      <h4>Red Onions</h4>
+      <p>Remove outer skin before slicing. Use the mandolin to slice to ⅛" thickness (roughly two quarters stacked). <strong>Always wear a cutting glove and use the black feeder tool — no exceptions.</strong></p>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════ WINE & BEER ═══════════════════════════════ -->
+  <section id="wine-beer">
+    <h2>Wine &amp; Beer</h2>
+    <p style="font-size:.85rem;color:#888;margin-bottom:20px;">All wine pours are 6 oz.</p>
+
+    <div class="wine-grid">
+
+      <div class="wine-card">
+        <h4>🍾 On Tap</h4>
+        <div class="wine-item">
+          <span class="wine-name">Brut / Sparkling / Champagne (Bubbles)</span>
+          <span class="wine-producer">Une Femme</span>
+        </div>
+        <div class="wine-item">
+          <span class="wine-name">Mimosa</span>
+          <span class="wine-producer">Une Femme + Orange Juice</span>
+        </div>
+        <div class="wine-item">
+          <span class="wine-name">Rosé</span>
+          <span class="wine-producer">St. Supéry</span>
+        </div>
+      </div>
+
+      <div class="wine-card">
+        <h4>🍷 Via Coravin</h4>
+        <div class="wine-item">
+          <span class="wine-name">Cabernet Sauvignon</span>
+          <span class="wine-producer">Sequoia Grove</span>
+          <span class="wine-desc">Full bodied and bold</span>
+        </div>
+        <div class="wine-item">
+          <span class="wine-name">Red Blend</span>
+          <span class="wine-producer">Pendulum</span>
+          <span class="wine-desc">Well balanced</span>
+        </div>
+        <div class="wine-item">
+          <span class="wine-name">Pinot Noir</span>
+          <span class="wine-producer">Decoy</span>
+          <span class="wine-desc">Lighter, citrusy and fruity</span>
+        </div>
+      </div>
+
+      <div class="wine-card">
+        <h4>🥂 By the Pour</h4>
+        <div class="wine-item">
+          <span class="wine-name">Chardonnay</span>
+          <span class="wine-producer">Diatom</span>
+          <span class="wine-desc">Lighter, refreshing</span>
+        </div>
+        <div class="wine-item">
+          <span class="wine-name">Sauvignon Blanc</span>
+          <span class="wine-producer">Allen Scott</span>
+          <span class="wine-desc">Crisp and zesty</span>
+        </div>
+      </div>
+
+      <div class="wine-card">
+        <h4>🍺 Beer On Tap</h4>
+        <div class="wine-item">
+          <span class="wine-name">Rahr &amp; Sons Blonde</span>
+          <span class="wine-desc">Lager</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ HAPPY HOUR ═══════════════════════════════ -->
+  <section id="happy-hour">
+    <h2>Happy Hour</h2>
+    <div class="hh-banner">
+      <h4>Happy Hour Schedule</h4>
+      <p style="font-size:.86rem;">Mon–Thur: 3pm–6pm &nbsp;|&nbsp; Fri: All day</p>
+      <div class="hh-deal">
+        <div class="hh-deal-item">🍷 All wine by the glass — 30% off</div>
+        <div class="hh-deal-item">🍺 All draft beer on tap — $5</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  function toggle(header) {
+    const card = header.closest('.card');
+    card.classList.toggle('open');
+  }
+
+  function togglePrep(header) {
+    const card = header.closest('.prep-recipe');
+    card.classList.toggle('open');
+  }
+
+  // Highlight nav on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks  = document.querySelectorAll('nav a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>

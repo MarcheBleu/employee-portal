@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Drink Recipe Guide</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f7f5f2;
+      color: #2c2c2c;
+      line-height: 1.5;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #2c2c2c;
+      color: #fff;
+      padding: 28px 32px 20px;
+    }
+    header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: .5px; }
+    header p  { font-size: .9rem; color: #bbb; margin-top: 4px; }
+
+    /* ── Tab nav ── */
+    nav {
+      background: #fff;
+      border-bottom: 1px solid #e0dbd4;
+      padding: 0 24px;
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav a {
+      display: inline-block;
+      padding: 14px 16px;
+      font-size: .85rem;
+      font-weight: 600;
+      color: #666;
+      text-decoration: none;
+      white-space: nowrap;
+      border-bottom: 3px solid transparent;
+    }
+    nav a:hover { color: #2c2c2c; }
+    nav a.active { color: #2c2c2c; border-bottom-color: #b07d3e; }
+
+    /* ── Layout ── */
+    main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
+
+    section { margin-bottom: 56px; scroll-margin-top: 60px; }
+    section > h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #2c2c2c;
+      border-bottom: 2px solid #d4c4a8;
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+    }
+    section > h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #7a5c2e;
+      margin: 28px 0 12px;
+    }
+
+    /* ── Drink card ── */
+    .drink-card {
+      background: #fff;
+      border: 1px solid #e8e2d8;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .drink-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      background: #faf8f4;
+      border-bottom: 1px solid #e8e2d8;
+      cursor: pointer;
+      user-select: none;
+    }
+    .drink-card-header h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      flex: 1;
+    }
+    .badge {
+      font-size: .7rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+      background: #e8e2d8;
+      color: #666;
+    }
+    .badge.hot  { background: #fde8d0; color: #a0491a; }
+    .badge.iced { background: #d0e8f8; color: #1a5fa0; }
+    .badge.both { background: #d8f0e0; color: #1a7a3e; }
+
+    .chevron {
+      font-size: .75rem;
+      color: #999;
+      transition: transform .2s;
+    }
+    .drink-card.open .chevron { transform: rotate(180deg); }
+
+    .drink-card-body { display: none; padding: 18px; }
+    .drink-card.open .drink-card-body { display: block; }
+
+    /* ── Size columns ── */
+    .size-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .size-block {
+      background: #f7f5f2;
+      border: 1px solid #e0dbd4;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .size-block h5 {
+      font-size: .8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: #b07d3e;
+      margin-bottom: 10px;
+    }
+    .size-block dl { font-size: .88rem; }
+    .size-block dt {
+      font-weight: 600;
+      color: #555;
+      margin-top: 6px;
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    .size-block dd { color: #2c2c2c; margin-left: 0; }
+
+    /* simple note under card */
+    .note {
+      font-size: .8rem;
+      color: #888;
+      margin-top: 10px;
+      font-style: italic;
+    }
+
+    /* ── Syrup table ── */
+    .syrup-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .syrup-card {
+      background: #fff;
+      border: 1px solid #e8e2d8;
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .syrup-card h4 {
+      font-size: .9rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #2c2c2c;
+    }
+    .syrup-card table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    .syrup-card th { text-align: left; padding: 4px 8px; color: #888; font-size: .75rem; text-transform: uppercase; }
+    .syrup-card td { padding: 5px 8px; border-top: 1px solid #f0ece6; }
+    .syrup-card td:last-child { font-weight: 600; }
+
+    .flavor-list {
+      columns: 2;
+      font-size: .85rem;
+      list-style: none;
+      gap: 4px;
+    }
+    .flavor-list li { padding: 3px 0; border-bottom: 1px solid #f0ece6; }
+    .flavor-list li::before { content: "·  "; color: #b07d3e; }
+    .sf { color: #888; font-style: italic; }
+
+    /* ── Tea prep ── */
+    .prep-card {
+      background: #fff;
+      border: 1px solid #e8e2d8;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .prep-card h4 {
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #2c2c2c;
+    }
+    .prep-card ol { padding-left: 20px; font-size: .88rem; }
+    .prep-card ol li { margin-bottom: 6px; }
+
+    /* ── Refill ── */
+    .refill-banner {
+      background: #fdf6e8;
+      border: 1px solid #e6d6b0;
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-size: .88rem;
+    }
+    .refill-banner strong { color: #7a5c2e; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>☕ Drink Recipe Guide</h1>
+  <p>Reference for team members — Coffee &amp; Tea Offerings</p>
+</header>
+
+<nav id="main-nav">
+  <a href="#coffee"    class="active">Coffee</a>
+  <a href="#tea">Tea</a>
+  <a href="#specialty">Specialty</a>
+  <a href="#refreshers">Refreshers</a>
+  <a href="#syrups">Syrups &amp; Flavors</a>
+  <a href="#prep">Tea Prep</a>
+  <a href="#drink-prep">Drink Prep</a>
+  <a href="#refills">Refills</a>
+</nav>
+
+<main>
+
+  <!-- ═══════════════════════════════ COFFEE ═══════════════════════════════ -->
+  <section id="coffee">
+    <h2>Coffee Drinks</h2>
+
+    <!-- Espresso -->
+    <div class="drink-card open">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Espresso</h4>
+        <span class="badge hot">Hot default</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>Single Shot</h5>
+            <dl>
+              <dt>Shots</dt><dd>1</dd>
+              <dt>Milk</dt><dd>None (unless requested)</dd>
+              <dt>Flavor</dt><dd>None (unless requested)</dd>
+              <dt>Ice</dt><dd>No (unless requested)</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>Double Shot</h5>
+            <dl>
+              <dt>Shots</dt><dd>2</dd>
+              <dt>Milk</dt><dd>None (unless requested)</dd>
+              <dt>Flavor</dt><dd>None (unless requested)</dd>
+              <dt>Ice</dt><dd>No (unless requested)</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Macchiato -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Macchiato</h4>
+        <span class="badge hot">Hot default</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>Double Shot (only size)</h5>
+            <dl>
+              <dt>Shots</dt><dd>2</dd>
+              <dt>Milk</dt><dd>Dollop of milk foam only (milk of choice) — 0 oz poured milk</dd>
+              <dt>Flavor</dt><dd>None (unless requested)</dd>
+              <dt>Ice</dt><dd>No (unless requested)</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cortado -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Cortado</h4>
+        <span class="badge hot">Hot default</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>Double Shot (only size)</h5>
+            <dl>
+              <dt>Shots</dt><dd>2</dd>
+              <dt>Milk</dt><dd>2 oz milk of choice</dd>
+              <dt>Flavor</dt><dd>None (unless requested)</dd>
+              <dt>Ice</dt><dd>No (unless requested)</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flat White -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Flat White</h4>
+        <span class="badge hot">Hot default</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>Double Shot (only size)</h5>
+            <dl>
+              <dt>Shots</dt><dd>2</dd>
+              <dt>Milk</dt><dd>3–4 oz milk of choice, frothed to microfoam</dd>
+              <dt>Flavor</dt><dd>None (unless requested)</dd>
+              <dt>Ice</dt><dd>No (unless requested)</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cappuccino -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Cappuccino</h4>
+        <span class="badge hot">Hot default</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>8 oz (Single Shot)</h5>
+            <dl>
+              <dt>Shots</dt><dd>1</dd>
+              <dt>Milk</dt><dd>6 oz milk of choice, frothed to microfoam</dd>
+              <dt>Flavor</dt><dd>None (unless requested)</dd>
+              <dt>Ice</dt><dd>No (unless requested)</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>12 oz — Cappuccino Forte (Double Shot)</h5>
+            <dl>
+              <dt>Shots</dt><dd>2</dd>
+              <dt>Milk</dt><dd>6 oz milk of choice, frothed to microfoam</dd>
+              <dt>Flavor</dt><dd>None (unless requested)</dd>
+              <dt>Ice</dt><dd>No (unless requested)</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Americano -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Americano</h4>
+        <span class="badge both">Hot + Iced</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <h3 style="margin-top:0;">Hot Americano</h3>
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>12 oz</h5>
+            <dl>
+              <dt>Shots</dt><dd>2 (double)</dd>
+              <dt>Water</dt><dd>8–10 oz steamed water</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Shots</dt><dd>3 (triple)</dd>
+              <dt>Water</dt><dd>10–12 oz steamed water</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+        </div>
+        <h3>Iced Americano</h3>
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Shots</dt><dd>3 (triple)</dd>
+              <dt>Ice</dt><dd>1 scoop</dd>
+              <dt>Water</dt><dd>8–10 oz cold water</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>22 oz</h5>
+            <dl>
+              <dt>Shots</dt><dd>4 (quad)</dd>
+              <dt>Ice</dt><dd>1½ scoops</dd>
+              <dt>Water</dt><dd>10–12 oz cold water</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Latte -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Latte</h4>
+        <span class="badge both">Hot + Iced</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <h3 style="margin-top:0;">Hot Latte</h3>
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>12 oz</h5>
+            <dl>
+              <dt>Shots</dt><dd>1 (single)</dd>
+              <dt>Milk</dt><dd>8 oz milk of choice, frothed to microfoam</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Shots</dt><dd>2 (double)</dd>
+              <dt>Milk</dt><dd>10 oz milk of choice, frothed to microfoam</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+        </div>
+        <h3>Iced Latte</h3>
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Shots</dt><dd>2 (double)</dd>
+              <dt>Ice</dt><dd>1 scoop</dd>
+              <dt>Milk</dt><dd>8–10 oz milk of choice</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>22 oz</h5>
+            <dl>
+              <dt>Shots</dt><dd>3 (triple)</dd>
+              <dt>Ice</dt><dd>1½ scoops</dd>
+              <dt>Milk</dt><dd>10–12 oz milk of choice</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drip Coffee -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Drip Coffee</h4>
+        <span class="badge hot">Hot default</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>12 oz</h5>
+            <dl>
+              <dt>Brew</dt><dd>Drip coffee</dd>
+              <dt>Milk</dt><dd>None (unless requested)</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+              <dt>Ice</dt><dd>No (unless requested)</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Brew</dt><dd>Drip coffee</dd>
+              <dt>Milk</dt><dd>None (unless requested)</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+              <dt>Ice</dt><dd>No (unless requested)</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cold Brew -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Cold Brew</h4>
+        <span class="badge iced">Iced only</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Ice</dt><dd>Yes (iced only)</dd>
+              <dt>Milk</dt><dd>None (unless requested)</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>22 oz</h5>
+            <dl>
+              <dt>Ice</dt><dd>Yes (iced only)</dd>
+              <dt>Milk</dt><dd>None (unless requested)</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════ TEA ═══════════════════════════════ -->
+  <section id="tea">
+    <h2>Tea Drinks</h2>
+
+    <!-- Matcha Latte -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Matcha Latte</h4>
+        <span class="badge both">Hot + Iced</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <h3 style="margin-top:0;">Hot Matcha Latte</h3>
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>12 oz</h5>
+            <dl>
+              <dt>Matcha</dt><dd>1 tsp</dd>
+              <dt>Milk</dt><dd>8 oz milk of choice, frothed to microfoam</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Matcha</dt><dd>1½ tsp</dd>
+              <dt>Milk</dt><dd>10 oz milk of choice, frothed to microfoam</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+        </div>
+        <h3>Iced Matcha Latte</h3>
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Matcha</dt><dd>1½ tsp</dd>
+              <dt>Ice</dt><dd>1 scoop</dd>
+              <dt>Milk</dt><dd>8–10 oz milk of choice</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>22 oz</h5>
+            <dl>
+              <dt>Matcha</dt><dd>2 tsp</dd>
+              <dt>Ice</dt><dd>1½ scoops</dd>
+              <dt>Milk</dt><dd>10–12 oz milk of choice</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chai Tea Latte -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Chai Tea Latte</h4>
+        <span class="badge both">Hot + Iced</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <h3 style="margin-top:0;">Hot Chai Tea Latte</h3>
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>12 oz</h5>
+            <dl>
+              <dt>Chai Concentrate</dt><dd>4 oz</dd>
+              <dt>Milk</dt><dd>6 oz milk of choice, frothed to microfoam</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Chai Concentrate</dt><dd>6 oz</dd>
+              <dt>Milk</dt><dd>8 oz milk of choice, frothed to microfoam</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+        </div>
+        <h3>Iced Chai Tea Latte</h3>
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Chai Concentrate</dt><dd>6 oz</dd>
+              <dt>Ice</dt><dd>1 scoop</dd>
+              <dt>Milk</dt><dd>8–10 oz milk of choice</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>22 oz</h5>
+            <dl>
+              <dt>Chai Concentrate</dt><dd>8 oz</dd>
+              <dt>Ice</dt><dd>1½ scoops</dd>
+              <dt>Milk</dt><dd>10–12 oz milk of choice</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hot Tea -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Hot Tea</h4>
+        <span class="badge both">Hot + Iced</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <h3 style="margin-top:0;">Hot Tea</h3>
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>12 oz</h5>
+            <dl>
+              <dt>Hot Water</dt><dd>10 oz</dd>
+              <dt>Tea Bag</dt><dd>1 bag</dd>
+              <dt>Milk</dt><dd>None (unless requested)</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Hot Water</dt><dd>14 oz</dd>
+              <dt>Tea Bag</dt><dd>1 bag</dd>
+              <dt>Milk</dt><dd>None (unless requested)</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+        </div>
+        <h3>Iced Tea</h3>
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Prepared Iced Tea</dt><dd>10 oz</dd>
+              <dt>Ice</dt><dd>1 scoop</dd>
+              <dt>Milk</dt><dd>None (unless requested)</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>22 oz</h5>
+            <dl>
+              <dt>Prepared Iced Tea</dt><dd>16 oz</dd>
+              <dt>Ice</dt><dd>1½ scoops</dd>
+              <dt>Milk</dt><dd>None (unless requested)</dd>
+              <dt>Flavor</dt><dd>Yes — see flavor list</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════ SPECIALTY ═══════════════════════════════ -->
+  <section id="specialty">
+    <h2>Specialty Drinks</h2>
+
+    <!-- Brown Sugar Shaken Espresso -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Iced Brown Sugar Shaken Espresso</h4>
+        <span class="badge iced">Iced only</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Shots</dt><dd>2 (double)</dd>
+              <dt>Flavor</dt><dd>1 pump caramel + 1 tbsp brown sugar</dd>
+              <dt>Ice</dt><dd>Iced only</dd>
+              <dt>Milk</dt><dd>Milk of choice</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>20 oz</h5>
+            <dl>
+              <dt>Shots</dt><dd>2 (double)</dd>
+              <dt>Flavor</dt><dd>1½ pumps caramel + 1½ tbsp brown sugar</dd>
+              <dt>Ice</dt><dd>Iced only</dd>
+              <dt>Milk</dt><dd>Milk of choice</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Iced Salted Caramel Cold Brew -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Iced Salted Caramel Cold Brew</h4>
+        <span class="badge iced">Iced only</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Cold Brew</dt><dd>12 oz</dd>
+              <dt>Flavor</dt><dd>1 pump caramel sauce</dd>
+              <dt>Ice</dt><dd>Iced only</dd>
+              <dt>Topping</dt><dd>Cold foam + garnish</dd>
+              <dt>Milk</dt><dd>None (unless requested)</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>22 oz</h5>
+            <dl>
+              <dt>Cold Brew</dt><dd>16 oz</dd>
+              <dt>Flavor</dt><dd>1½ pumps caramel sauce</dd>
+              <dt>Ice</dt><dd>Iced only</dd>
+              <dt>Topping</dt><dd>Cold foam + garnish</dd>
+              <dt>Milk</dt><dd>None (unless requested)</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Iced Sweet Cream Cold Brew -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Iced Sweet Cream Cold Brew</h4>
+        <span class="badge iced">Iced only</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Cold Brew</dt><dd>12 oz</dd>
+              <dt>Flavor</dt><dd>3 pumps simple syrup</dd>
+              <dt>Ice</dt><dd>Iced only</dd>
+              <dt>Topping</dt><dd>Cold foam</dd>
+              <dt>Milk</dt><dd>None (unless requested)</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>22 oz</h5>
+            <dl>
+              <dt>Cold Brew</dt><dd>16 oz</dd>
+              <dt>Flavor</dt><dd>4 pumps simple syrup</dd>
+              <dt>Ice</dt><dd>Iced only</dd>
+              <dt>Topping</dt><dd>Cold foam</dd>
+              <dt>Milk</dt><dd>None (unless requested)</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lavender Matcha -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Lavender Matcha</h4>
+        <span class="badge both">Hot + Iced</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <h3 style="margin-top:0;">Hot Lavender Matcha</h3>
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>12 oz</h5>
+            <dl>
+              <dt>Matcha</dt><dd>1 tsp</dd>
+              <dt>Flavor</dt><dd>Lavender syrup</dd>
+              <dt>Milk</dt><dd>8–10 oz milk of choice</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Matcha</dt><dd>1½ tsp</dd>
+              <dt>Flavor</dt><dd>Lavender syrup</dd>
+              <dt>Milk</dt><dd>10–12 oz milk of choice</dd>
+            </dl>
+          </div>
+        </div>
+        <h3>Iced Lavender Matcha</h3>
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Matcha</dt><dd>1½ tsp</dd>
+              <dt>Flavor</dt><dd>Lavender syrup</dd>
+              <dt>Ice</dt><dd>1 scoop</dd>
+              <dt>Milk</dt><dd>8–10 oz milk of choice</dd>
+              <dt>Topping</dt><dd>Cold foam</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>22 oz</h5>
+            <dl>
+              <dt>Matcha</dt><dd>2 tsp</dd>
+              <dt>Flavor</dt><dd>Lavender syrup</dd>
+              <dt>Ice</dt><dd>1½ scoops</dd>
+              <dt>Milk</dt><dd>10–12 oz milk of choice</dd>
+              <dt>Topping</dt><dd>Cold foam</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Samoa Cookie Latte -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Samoa Cookie Latte</h4>
+        <span class="badge both">Hot + Iced</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <h3 style="margin-top:0;">Hot Samoa Cookie Latte</h3>
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>12 oz</h5>
+            <dl>
+              <dt>Shots</dt><dd>1 (single)</dd>
+              <dt>Flavor</dt><dd>White chocolate + coconut + toasted marshmallow</dd>
+              <dt>Milk</dt><dd>6 oz milk of choice</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Shots</dt><dd>2 (double)</dd>
+              <dt>Flavor</dt><dd>White chocolate + coconut + toasted marshmallow</dd>
+              <dt>Milk</dt><dd>10 oz milk of choice</dd>
+            </dl>
+          </div>
+        </div>
+        <h3>Iced Samoa Cookie Latte</h3>
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Shots</dt><dd>2 (double)</dd>
+              <dt>Flavor</dt><dd>White chocolate + coconut + toasted marshmallow</dd>
+              <dt>Ice</dt><dd>1 scoop</dd>
+              <dt>Milk</dt><dd>8–10 oz milk of choice</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>22 oz</h5>
+            <dl>
+              <dt>Shots</dt><dd>3 (triple)</dd>
+              <dt>Flavor</dt><dd>White chocolate + coconut + toasted marshmallow</dd>
+              <dt>Ice</dt><dd>1½ scoops</dd>
+              <dt>Milk</dt><dd>10–12 oz milk of choice</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pistachio Honey Matcha -->
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Pistachio Honey Matcha</h4>
+        <span class="badge both">Hot + Iced</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <h3 style="margin-top:0;">Hot Pistachio Honey Matcha</h3>
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>12 oz</h5>
+            <dl>
+              <dt>Matcha</dt><dd>1 tsp</dd>
+              <dt>Flavor</dt><dd>Pistachio + honey</dd>
+              <dt>Milk</dt><dd>8–10 oz milk of choice</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Matcha</dt><dd>1½ tsp</dd>
+              <dt>Flavor</dt><dd>Pistachio + honey</dd>
+              <dt>Milk</dt><dd>10–12 oz milk of choice</dd>
+            </dl>
+          </div>
+        </div>
+        <h3>Iced Pistachio Honey Matcha</h3>
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Matcha</dt><dd>1½ tsp</dd>
+              <dt>Flavor</dt><dd>Pistachio + honey</dd>
+              <dt>Ice</dt><dd>1 scoop</dd>
+              <dt>Milk</dt><dd>8–10 oz milk of choice</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>22 oz</h5>
+            <dl>
+              <dt>Matcha</dt><dd>2 tsp</dd>
+              <dt>Flavor</dt><dd>Pistachio + honey</dd>
+              <dt>Ice</dt><dd>1½ scoops</dd>
+              <dt>Milk</dt><dd>10–12 oz milk of choice</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════ REFRESHERS ═══════════════════════════════ -->
+  <section id="refreshers">
+    <h2>Refreshers</h2>
+    <p style="font-size:.88rem; color:#666; margin-bottom:16px;">Available in: Peach Agave, Blue Raspberry, Strawberry Dragonfruit, and Tropical</p>
+
+    <div class="drink-card">
+      <div class="drink-card-header" onclick="toggle(this)">
+        <h4>Refresher (all flavors)</h4>
+        <span class="badge iced">Iced only</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="drink-card-body">
+        <div class="size-grid">
+          <div class="size-block">
+            <h5>16 oz</h5>
+            <dl>
+              <dt>Lemonade</dt><dd>6 oz</dd>
+              <dt>La Croix Pure</dt><dd>6 oz</dd>
+              <dt>Ice</dt><dd>1½ scoops</dd>
+              <dt>Flavor</dt><dd>Yes (flavor of choice)</dd>
+            </dl>
+          </div>
+          <div class="size-block">
+            <h5>22 oz</h5>
+            <dl>
+              <dt>Lemonade</dt><dd>8 oz</dd>
+              <dt>La Croix Pure</dt><dd>8 oz</dd>
+              <dt>Ice</dt><dd>1½ scoops</dd>
+              <dt>Flavor</dt><dd>Yes (flavor of choice)</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ SYRUPS ═══════════════════════════════ -->
+  <section id="syrups">
+    <h2>Syrups &amp; Flavors</h2>
+
+    <div class="syrup-grid">
+      <div class="syrup-card">
+        <h4>Pump Ratio by Cup Size</h4>
+        <table>
+          <thead><tr><th>Cup Size</th><th>Syrup</th><th>Sauce</th></tr></thead>
+          <tbody>
+            <tr><td>12 oz</td><td>2 pumps</td><td>½ pump</td></tr>
+            <tr><td>16 oz</td><td>3 pumps</td><td>1 pump</td></tr>
+            <tr><td>22 oz</td><td>4 pumps</td><td>1½ pumps</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="syrup-card">
+        <h4>Available Flavors</h4>
+        <ul class="flavor-list">
+          <li>Agave</li>
+          <li>Almond</li>
+          <li>Apple</li>
+          <li>Brown Sugar</li>
+          <li>Caramel <em>(sauce)</em></li>
+          <li>Cinnamon</li>
+          <li>Coconut</li>
+          <li>Dragonfruit</li>
+          <li>French Madeline</li>
+          <li>Hazelnut</li>
+          <li>Hibiscus</li>
+          <li>Honey</li>
+          <li>Lavender</li>
+          <li>Mango</li>
+          <li>Mocha <em>(powder)</em></li>
+          <li>Peach</li>
+          <li>Peppermint</li>
+          <li>Pineapple</li>
+          <li>Pistachio</li>
+          <li>Pumpkin</li>
+          <li>Raspberry</li>
+          <li>Simple Syrup</li>
+          <li>Strawberry</li>
+          <li>Toasted Marshmallow</li>
+          <li>Toffee Crunch</li>
+          <li>Vanilla</li>
+          <li>White Mocha <em>(sauce)</em></li>
+          <li class="sf">Sugar-Free Caramel</li>
+          <li class="sf">Sugar-Free Hazelnut</li>
+          <li class="sf">Sugar-Free Raspberry</li>
+          <li class="sf">Sugar-Free Vanilla</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ TEA PREP ═══════════════════════════════ -->
+  <section id="prep">
+    <h2>Tea Preparation</h2>
+
+    <div class="prep-card">
+      <h4>Iced Tea Batches — Black / Hibiscus / Bleu Tea</h4>
+      <ol>
+        <li>Measure 90 g tea leaf and place into a reusable tea bag; tie off.</li>
+        <li>Place bag in a large square tub with a lid.</li>
+        <li>Pour 4 qt hot water and steep for 3 minutes.</li>
+        <li>Add 8 qt cold water on top.</li>
+        <li>Label with brew date/time and place in the walk-in cooler.</li>
+        <li>Leave tea bag in for 16–24 hours, then remove.</li>
+      </ol>
+    </div>
+
+    <div class="prep-card">
+      <h4>Individual Tea Bags — Crescent Green / Rosella / Earl Grey / Ambrosia / Chamomile / Peppermint</h4>
+      <ol>
+        <li>Weigh out 4–5 g tea leaves using a scale. <em>(Peppermint: 3 g)</em></li>
+        <li>Place measured leaves into an individual disposable tea bag.</li>
+        <li>Tie off the tea bag.</li>
+        <li>Place in the labeled canister for that tea variety.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ DRINK PREP ═══════════════════════════════ -->
+  <section id="drink-prep">
+    <h2>Drink Prep</h2>
+
+    <div class="prep-card">
+      <h4>Cold Foam Base</h4>
+      <ol>
+        <li>Add flavoring to a large squirt bottle: 4 pumps desired syrup (lavender, simple, etc.), 2 pumps desired sauce (caramel), or 2 oz puree (brambleberry or strawberry).</li>
+        <li>Add ⅔ qt whipping cream to the bottle.</li>
+        <li>Add food coloring as needed: salted caramel gets a hint of orange, strawberry gets a hint of red, brambleberry gets a hint of red and purple.</li>
+        <li>Top off the squeeze bottle and shake until fully mixed.</li>
+        <li>Label with food prep label and place in milk fridge.</li>
+      </ol>
+    </div>
+
+    <div class="prep-card">
+      <h4>Strawberry Puree</h4>
+      <ol>
+        <li>Cut the tops off 3 clamshells of washed strawberries and cut in half.</li>
+        <li>Place in the blender base.</li>
+        <li>Add 1 cup granulated sugar and ¼ cup strawberry gelatin base.</li>
+        <li>Blend on setting 1, then pulse 5 times.</li>
+        <li>Once fully blended, pour into a large squirt bottle. Label with prep sticker and place in milk fridge.</li>
+      </ol>
+    </div>
+
+    <div class="prep-card">
+      <h4>Brambleberry Puree</h4>
+      <ol>
+        <li>Place 1 container each of washed blueberries, blackberries, and raspberries, plus 1 clamshell of washed strawberries (tops removed) into a blender base.</li>
+        <li>Add 1½ cups sugar and ½ cup water.</li>
+        <li>Blend on setting 1 for 2 full cycles.</li>
+        <li>Once fully blended, pour into a large squirt bottle. Label with prep sticker and place in milk fridge.</li>
+      </ol>
+    </div>
+
+    <div class="prep-card">
+      <h4>Blue Lemonade</h4>
+      <ol>
+        <li>Add ¼ tsp blue food coloring to the prepared lemonade base.</li>
+        <li>Shake well to combine.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ REFILLS ═══════════════════════════════ -->
+  <section id="refills">
+    <h2>Refills</h2>
+    <div class="refill-banner">
+      <strong>Drip Coffee Refills:</strong> We offer <strong>1 refill</strong> on drip coffees ordered in a "for here" mug. The refill is the same size as the original order and comes in a "for here" mug. <strong>Refills do not include flavors.</strong>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  function toggle(header) {
+    const card = header.closest('.drink-card');
+    card.classList.toggle('open');
+  }
+
+  // Highlight nav on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>
