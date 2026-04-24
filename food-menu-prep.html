@@ -4,29 +4,32 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Menu & Prep Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #f7f5f2;
+      font-family: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
+      background: #F0EAD6;
       color: #2c2c2c;
       line-height: 1.5;
     }
 
     /* ── Header ── */
     header {
-      background: #2c2c2c;
+      background: #2D3057;
       color: #fff;
       padding: 28px 32px 20px;
     }
-    header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: .5px; }
-    header p  { font-size: .9rem; color: #bbb; margin-top: 4px; }
+    header h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 2rem; font-weight: 600; letter-spacing: .5px; }
+    header p  { font-size: .9rem; color: #b8bdd8; margin-top: 4px; }
 
     /* ── Tab nav ── */
     nav {
       background: #fff;
-      border-bottom: 1px solid #e0dbd4;
+      border-bottom: 1px solid #D4C5A0;
       padding: 0 24px;
       display: flex;
       gap: 4px;
@@ -45,32 +48,33 @@
       white-space: nowrap;
       border-bottom: 3px solid transparent;
     }
-    nav a:hover { color: #2c2c2c; }
-    nav a.active { color: #2c2c2c; border-bottom-color: #b07d3e; }
+    nav a:hover { color: #2D3057; }
+    nav a.active { color: #2D3057; border-bottom-color: #C4973A; }
 
     /* ── Layout ── */
     main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
 
     section { margin-bottom: 56px; scroll-margin-top: 60px; }
     section > h2 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #2c2c2c;
-      border-bottom: 2px solid #d4c4a8;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #2D3057;
+      border-bottom: 2px solid #C4973A;
       padding-bottom: 8px;
       margin-bottom: 20px;
     }
     section > h3 {
       font-size: 1rem;
       font-weight: 700;
-      color: #7a5c2e;
+      color: #C4973A;
       margin: 28px 0 12px;
     }
 
     /* ── Drink/food card ── */
     .card {
       background: #fff;
-      border: 1px solid #e8e2d8;
+      border: 1px solid #D4C5A0;
       border-radius: 10px;
       margin-bottom: 16px;
       overflow: hidden;
@@ -80,8 +84,8 @@
       align-items: center;
       gap: 10px;
       padding: 14px 18px;
-      background: #faf8f4;
-      border-bottom: 1px solid #e8e2d8;
+      background: #F5EDD8;
+      border-bottom: 1px solid #D4C5A0;
       cursor: pointer;
       user-select: none;
     }
@@ -129,7 +133,7 @@
       counter-increment: step;
       position: relative;
       padding: 6px 0 6px 8px;
-      border-bottom: 1px solid #f0ece6;
+      border-bottom: 1px solid #E8DFC8;
     }
     .recipe-steps > li:last-child { border-bottom: none; }
     .recipe-steps > li::before {
@@ -137,7 +141,7 @@
       position: absolute;
       left: -20px;
       top: 7px;
-      background: #b07d3e;
+      background: #C4973A;
       color: #fff;
       font-size: .7rem;
       font-weight: 700;
@@ -166,11 +170,11 @@
       flex-wrap: wrap;
       margin-top: 14px;
       padding-top: 12px;
-      border-top: 1px dashed #d4c4a8;
+      border-top: 1px dashed #D4C5A0;
     }
     .order-type-item {
-      background: #f7f5f2;
-      border: 1px solid #e0dbd4;
+      background: #F8F3E8;
+      border: 1px solid #D4C5A0;
       border-radius: 8px;
       padding: 8px 14px;
       font-size: .82rem;
@@ -180,7 +184,7 @@
       font-size: .72rem;
       text-transform: uppercase;
       letter-spacing: .5px;
-      color: #b07d3e;
+      color: #C4973A;
       margin-bottom: 2px;
     }
 
@@ -193,8 +197,8 @@
     }
     .ingredient-chip {
       font-size: .78rem;
-      background: #f0ece6;
-      border: 1px solid #e0dbd4;
+      background: #F0E8D4;
+      border: 1px solid #D4C5A0;
       border-radius: 20px;
       padding: 3px 10px;
       color: #444;
@@ -203,7 +207,7 @@
     /* ── Prep recipe card ── */
     .prep-recipe {
       background: #fff;
-      border: 1px solid #e8e2d8;
+      border: 1px solid #D4C5A0;
       border-radius: 10px;
       margin-bottom: 16px;
       overflow: hidden;
@@ -213,8 +217,8 @@
       align-items: center;
       gap: 10px;
       padding: 14px 18px;
-      background: #faf8f4;
-      border-bottom: 1px solid #e8e2d8;
+      background: #F5EDD8;
+      border-bottom: 1px solid #D4C5A0;
       cursor: pointer;
       user-select: none;
     }
@@ -224,8 +228,8 @@
     .prep-recipe.open .prep-recipe-body { display: block; }
 
     .prep-ingredients {
-      background: #f7f5f2;
-      border: 1px solid #e0dbd4;
+      background: #F8F3E8;
+      border: 1px solid #D4C5A0;
       border-radius: 8px;
       padding: 14px 16px;
       margin-bottom: 16px;
@@ -235,7 +239,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: .5px;
-      color: #b07d3e;
+      color: #C4973A;
       margin-bottom: 8px;
     }
     .prep-ingredients ul {
@@ -245,16 +249,16 @@
     }
     .prep-ingredients ul li {
       padding: 3px 0;
-      border-bottom: 1px solid #ece8e2;
+      border-bottom: 1px solid #E8DFC8;
     }
-    .prep-ingredients ul li::before { content: "· "; color: #b07d3e; }
+    .prep-ingredients ul li::before { content: "· "; color: #C4973A; }
 
     .directions-label {
       font-size: .75rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: .5px;
-      color: #7a5c2e;
+      color: #2D3057;
       margin-bottom: 8px;
     }
 
@@ -267,7 +271,7 @@
     }
     .wine-card {
       background: #fff;
-      border: 1px solid #e8e2d8;
+      border: 1px solid #D4C5A0;
       border-radius: 10px;
       padding: 18px;
     }
@@ -276,14 +280,14 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: .5px;
-      color: #7a5c2e;
+      color: #C4973A;
       margin-bottom: 12px;
     }
     .wine-item {
       display: flex;
       flex-direction: column;
       padding: 8px 0;
-      border-bottom: 1px solid #f0ece6;
+      border-bottom: 1px solid #E8DFC8;
       font-size: .86rem;
     }
     .wine-item:last-child { border-bottom: none; }
@@ -293,8 +297,8 @@
 
     /* ── Meal deal banner ── */
     .deal-banner {
-      background: #fdf6e8;
-      border: 1px solid #e6d6b0;
+      background: #F5EDD8;
+      border: 1px solid #D4C5A0;
       border-radius: 10px;
       padding: 20px 24px;
       font-size: .88rem;
@@ -304,11 +308,11 @@
       font-size: 1rem;
       font-weight: 700;
       margin-bottom: 10px;
-      color: #7a5c2e;
+      color: #2D3057;
     }
     .deal-banner .upsell {
-      background: #fff8ed;
-      border-left: 3px solid #b07d3e;
+      background: #FDF6E8;
+      border-left: 3px solid #C4973A;
       padding: 10px 14px;
       margin: 10px 0;
       border-radius: 0 6px 6px 0;
@@ -320,7 +324,7 @@
       list-style: none;
       margin: 8px 0;
     }
-    .deal-banner ul li::before { content: "✓  "; color: #7a5c2e; font-weight: 700; }
+    .deal-banner ul li::before { content: "✓  "; color: #2D3057; font-weight: 700; }
     .deal-banner ul li { padding: 3px 0; }
 
     /* ── Happy Hour banner ── */
@@ -356,7 +360,7 @@
     /* ── Prep guidelines ── */
     .guideline-card {
       background: #fff;
-      border: 1px solid #e8e2d8;
+      border: 1px solid #D4C5A0;
       border-radius: 10px;
       padding: 18px;
       margin-bottom: 12px;
@@ -365,7 +369,7 @@
       font-size: .9rem;
       font-weight: 700;
       margin-bottom: 8px;
-      color: #2c2c2c;
+      color: #2D3057;
     }
     .guideline-card p { font-size: .86rem; color: #444; }
 
@@ -385,6 +389,7 @@
 <body>
 
 <header>
+  <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;color:#C4973A;font-size:.8rem;font-weight:600;text-decoration:none;letter-spacing:.5px;margin-bottom:12px;">&#8592; Employee Portal</a>
   <h1>🍽️ Menu &amp; Prep Recipe Guide</h1>
   <p>Reference for team members — Café Food, Prep Recipes, Wine &amp; Beer</p>
 </header>
@@ -409,7 +414,7 @@
     <h2>Breakfast Entrees</h2>
 
     <!-- Breakfast Sandwich -->
-    <div class="card open">
+    <div class="card">
       <div class="card-header" onclick="toggle(this)">
         <h4>Breakfast Sandwich</h4>
         <span class="badge breakfast">Bagel or Biscuit</span>

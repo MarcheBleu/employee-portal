@@ -4,29 +4,32 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Drink Recipe Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #f7f5f2;
+      font-family: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
+      background: #F0EAD6;
       color: #2c2c2c;
       line-height: 1.5;
     }
 
     /* ── Header ── */
     header {
-      background: #2c2c2c;
+      background: #2D3057;
       color: #fff;
       padding: 28px 32px 20px;
     }
-    header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: .5px; }
-    header p  { font-size: .9rem; color: #bbb; margin-top: 4px; }
+    header h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 2rem; font-weight: 600; letter-spacing: .5px; }
+    header p  { font-size: .9rem; color: #b8bdd8; margin-top: 4px; }
 
     /* ── Tab nav ── */
     nav {
       background: #fff;
-      border-bottom: 1px solid #e0dbd4;
+      border-bottom: 1px solid #D4C5A0;
       padding: 0 24px;
       display: flex;
       gap: 4px;
@@ -45,32 +48,33 @@
       white-space: nowrap;
       border-bottom: 3px solid transparent;
     }
-    nav a:hover { color: #2c2c2c; }
-    nav a.active { color: #2c2c2c; border-bottom-color: #b07d3e; }
+    nav a:hover { color: #2D3057; }
+    nav a.active { color: #2D3057; border-bottom-color: #C4973A; }
 
     /* ── Layout ── */
     main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
 
     section { margin-bottom: 56px; scroll-margin-top: 60px; }
     section > h2 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #2c2c2c;
-      border-bottom: 2px solid #d4c4a8;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #2D3057;
+      border-bottom: 2px solid #C4973A;
       padding-bottom: 8px;
       margin-bottom: 20px;
     }
     section > h3 {
       font-size: 1rem;
       font-weight: 700;
-      color: #7a5c2e;
+      color: #C4973A;
       margin: 28px 0 12px;
     }
 
     /* ── Drink card ── */
     .drink-card {
       background: #fff;
-      border: 1px solid #e8e2d8;
+      border: 1px solid #D4C5A0;
       border-radius: 10px;
       margin-bottom: 16px;
       overflow: hidden;
@@ -80,8 +84,8 @@
       align-items: center;
       gap: 10px;
       padding: 14px 18px;
-      background: #faf8f4;
-      border-bottom: 1px solid #e8e2d8;
+      background: #F5EDD8;
+      border-bottom: 1px solid #D4C5A0;
       cursor: pointer;
       user-select: none;
     }
@@ -119,8 +123,8 @@
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     }
     .size-block {
-      background: #f7f5f2;
-      border: 1px solid #e0dbd4;
+      background: #F8F3E8;
+      border: 1px solid #D4C5A0;
       border-radius: 8px;
       padding: 14px 16px;
     }
@@ -129,7 +133,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: .6px;
-      color: #b07d3e;
+      color: #C4973A;
       margin-bottom: 10px;
     }
     .size-block dl { font-size: .88rem; }
@@ -159,7 +163,7 @@
     }
     .syrup-card {
       background: #fff;
-      border: 1px solid #e8e2d8;
+      border: 1px solid #D4C5A0;
       border-radius: 10px;
       padding: 18px;
     }
@@ -167,11 +171,11 @@
       font-size: .9rem;
       font-weight: 700;
       margin-bottom: 10px;
-      color: #2c2c2c;
+      color: #2D3057;
     }
     .syrup-card table { width: 100%; border-collapse: collapse; font-size: .85rem; }
     .syrup-card th { text-align: left; padding: 4px 8px; color: #888; font-size: .75rem; text-transform: uppercase; }
-    .syrup-card td { padding: 5px 8px; border-top: 1px solid #f0ece6; }
+    .syrup-card td { padding: 5px 8px; border-top: 1px solid #E8DFC8; }
     .syrup-card td:last-child { font-weight: 600; }
 
     .flavor-list {
@@ -180,14 +184,14 @@
       list-style: none;
       gap: 4px;
     }
-    .flavor-list li { padding: 3px 0; border-bottom: 1px solid #f0ece6; }
-    .flavor-list li::before { content: "·  "; color: #b07d3e; }
+    .flavor-list li { padding: 3px 0; border-bottom: 1px solid #E8DFC8; }
+    .flavor-list li::before { content: "·  "; color: #C4973A; }
     .sf { color: #888; font-style: italic; }
 
     /* ── Tea prep ── */
     .prep-card {
       background: #fff;
-      border: 1px solid #e8e2d8;
+      border: 1px solid #D4C5A0;
       border-radius: 10px;
       padding: 20px;
       margin-bottom: 16px;
@@ -196,25 +200,26 @@
       font-size: .95rem;
       font-weight: 700;
       margin-bottom: 12px;
-      color: #2c2c2c;
+      color: #2D3057;
     }
     .prep-card ol { padding-left: 20px; font-size: .88rem; }
     .prep-card ol li { margin-bottom: 6px; }
 
     /* ── Refill ── */
     .refill-banner {
-      background: #fdf6e8;
-      border: 1px solid #e6d6b0;
+      background: #F5EDD8;
+      border: 1px solid #D4C5A0;
       border-radius: 10px;
       padding: 16px 20px;
       font-size: .88rem;
     }
-    .refill-banner strong { color: #7a5c2e; }
+    .refill-banner strong { color: #2D3057; }
   </style>
 </head>
 <body>
 
 <header>
+  <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;color:#C4973A;font-size:.8rem;font-weight:600;text-decoration:none;letter-spacing:.5px;margin-bottom:12px;">&#8592; Employee Portal</a>
   <h1>☕ Drink Recipe Guide</h1>
   <p>Reference for team members — Coffee &amp; Tea Offerings</p>
 </header>
@@ -237,7 +242,7 @@
     <h2>Coffee Drinks</h2>
 
     <!-- Espresso -->
-    <div class="drink-card open">
+    <div class="drink-card">
       <div class="drink-card-header" onclick="toggle(this)">
         <h4>Espresso</h4>
         <span class="badge hot">Hot default</span>
