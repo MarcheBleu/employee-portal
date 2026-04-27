@@ -27,17 +27,32 @@
     header p  { font-size: .9rem; color: #b8bdd8; margin-top: 4px; }
 
     /* ── Tab nav ── */
-    nav {
+    .nav-wrapper {
       background: #fff;
       border-bottom: 1px solid #D4C5A0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      position: relative;
+    }
+    .nav-wrapper::after {
+      content: '';
+      pointer-events: none;
+      position: absolute;
+      top: 0; right: 0; bottom: 0;
+      width: 48px;
+      background: linear-gradient(to right, transparent, #fff);
+    }
+    nav {
+      background: #fff;
       padding: 0 24px;
       display: flex;
       gap: 4px;
       overflow-x: auto;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
+    nav::-webkit-scrollbar { display: none; }
     nav a {
       display: inline-block;
       padding: 14px 16px;
@@ -50,6 +65,30 @@
     }
     nav a:hover { color: #2D3057; }
     nav a.active { color: #2D3057; border-bottom-color: #C4973A; }
+
+    /* ── Search bar ── */
+    .search-wrap {
+      max-width: 1100px;
+      margin: 24px auto 0;
+      padding: 0 24px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 10px 16px;
+      border: 1px solid #D4C5A0;
+      border-radius: 6px;
+      background: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-size: .88rem;
+      color: #2c2c2c;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .search-input:focus { border-color: #C4973A; }
+    .search-input::placeholder { color: #aaa; }
+
+    /* hide sections with no visible cards */
+    section.hidden { display: none; }
 
     /* ── Layout ── */
     main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
@@ -392,20 +431,27 @@
   <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;color:#C4973A;font-size:.8rem;font-weight:600;text-decoration:none;letter-spacing:.5px;margin-bottom:12px;">&#8592; Employee Portal</a>
   <h1>🍽️ Menu &amp; Prep Recipe Guide</h1>
   <p>Reference for team members — Café Food, Prep Recipes, Wine &amp; Beer</p>
+  <p style="font-size:.75rem;color:#8892b8;margin-top:6px;letter-spacing:.04em;">Last updated: April 27, 2026</p>
 </header>
 
-<nav id="main-nav">
-  <a href="#breakfast-entrees" class="active">Breakfast Entrees</a>
-  <a href="#breakfast-bites">Breakfast Bites</a>
-  <a href="#lunch">Lunch Sandwiches</a>
-  <a href="#salads">Salads &amp; Wraps</a>
-  <a href="#meal-deal">Meal Deal</a>
-  <a href="#grab-and-go">Grab &amp; Go</a>
-  <a href="#food-prep">Food Prep</a>
-  <a href="#prep-guidelines">Prep Guidelines</a>
-  <a href="#wine-beer">Wine &amp; Beer</a>
-  <a href="#happy-hour">Happy Hour</a>
-</nav>
+<div class="nav-wrapper">
+  <nav id="main-nav">
+    <a href="#breakfast-entrees" class="active">Breakfast Entrees</a>
+    <a href="#breakfast-bites">Breakfast Bites</a>
+    <a href="#lunch">Lunch Sandwiches</a>
+    <a href="#salads">Salads &amp; Wraps</a>
+    <a href="#meal-deal">Meal Deal</a>
+    <a href="#grab-and-go">Grab &amp; Go</a>
+    <a href="#food-prep">Food Prep</a>
+    <a href="#prep-guidelines">Prep Guidelines</a>
+    <a href="#wine-beer">Wine &amp; Beer</a>
+    <a href="#happy-hour">Happy Hour</a>
+  </nav>
+</div>
+
+<div class="search-wrap">
+  <input class="search-input" type="search" id="menu-search" placeholder="Search menu items, ingredients…" oninput="filterMenu(this.value)" />
+</div>
 
 <main>
 
@@ -1070,66 +1116,4 @@
       <div class="wine-card">
         <h4>🥂 By the Pour</h4>
         <div class="wine-item">
-          <span class="wine-name">Chardonnay</span>
-          <span class="wine-producer">Diatom</span>
-          <span class="wine-desc">Lighter, refreshing</span>
-        </div>
-        <div class="wine-item">
-          <span class="wine-name">Sauvignon Blanc</span>
-          <span class="wine-producer">Allen Scott</span>
-          <span class="wine-desc">Crisp and zesty</span>
-        </div>
-      </div>
-
-      <div class="wine-card">
-        <h4>🍺 Beer On Tap</h4>
-        <div class="wine-item">
-          <span class="wine-name">Rahr &amp; Sons Blonde</span>
-          <span class="wine-desc">Lager</span>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════ HAPPY HOUR ═══════════════════════════════ -->
-  <section id="happy-hour">
-    <h2>Happy Hour</h2>
-    <div class="hh-banner">
-      <h4>Happy Hour Schedule</h4>
-      <p style="font-size:.86rem;">Mon–Thur: 3pm–6pm &nbsp;|&nbsp; Fri: All day</p>
-      <div class="hh-deal">
-        <div class="hh-deal-item">🍷 All wine by the glass — 30% off</div>
-        <div class="hh-deal-item">🍺 All draft beer on tap — $5</div>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<script>
-  function toggle(header) {
-    const card = header.closest('.card');
-    card.classList.toggle('open');
-  }
-
-  function togglePrep(header) {
-    const card = header.closest('.prep-recipe');
-    card.classList.toggle('open');
-  }
-
-  // Highlight nav on scroll
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks  = document.querySelectorAll('nav a');
-  window.addEventListener('scroll', () => {
-    let current = '';
-    sections.forEach(s => {
-      if (window.scrollY >= s.offsetTop - 80) current = s.id;
-    });
-    navLinks.forEach(a => {
-      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
-    });
-  });
-</script>
-</body>
-</html>
+          <
