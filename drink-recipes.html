@@ -278,7 +278,7 @@
 </div>
 
 <div class="search-wrap">
-  <input class="search-input" type="search" id="drink-search" placeholder="Search recipes, ingredients…" oninput="filterDrinks(this.value)" />
+  <input class="search-input" type="search" id="drink-search" placeholder="Search recipes, ingredients…" />
 </div>
 
 <main>
@@ -1139,4 +1139,81 @@
         <li>Place in the blender base.</li>
         <li>Add 1 cup granulated sugar and ¼ cup strawberry gelatin base.</li>
         <li>Blend on setting 1, then pulse 5 times.</li>
-        <li>Once full
+        <li>Once fully blended, pour into a large squirt bottle. Label with prep sticker and place in milk fridge.</li>
+      </ol>
+    </div>
+
+    <div class="prep-card">
+      <h4>Brambleberry Puree</h4>
+      <ol>
+        <li>Place 1 container each of washed blueberries, blackberries, and raspberries, plus 1 clamshell of washed strawberries (tops removed) into a blender base.</li>
+        <li>Add 1½ cups sugar and ½ cup water.</li>
+        <li>Blend on setting 1 for 2 full cycles.</li>
+        <li>Once fully blended, pour into a large squirt bottle. Label with prep sticker and place in milk fridge.</li>
+      </ol>
+    </div>
+
+    <div class="prep-card">
+      <h4>Blue Lemonade</h4>
+      <ol>
+        <li>Add ¼ tsp blue food coloring to the prepared lemonade base.</li>
+        <li>Shake well to combine.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ REFILLS ═══════════════════════════════ -->
+  <section id="refills">
+    <h2>Refills</h2>
+    <div class="refill-banner">
+      <strong>Drip Coffee Refills:</strong> We offer <strong>1 refill</strong> on drip coffees ordered in a "for here" mug. The refill is the same size as the original order and comes in a "for here" mug. <strong>Refills do not include flavors.</strong>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  function toggle(header) {
+    const card = header.closest('.drink-card');
+    card.classList.toggle('open');
+  }
+
+  // Search / filter
+  document.addEventListener('DOMContentLoaded', function() {
+    var searchInput = document.getElementById('drink-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        var q = this.value.trim().toLowerCase();
+        document.querySelectorAll('section').forEach(function(section) {
+          var cards = section.querySelectorAll('.drink-card');
+          if (cards.length === 0) {
+            section.style.display = '';
+            return;
+          }
+          var anyVisible = false;
+          cards.forEach(function(card) {
+            var match = !q || card.textContent.toLowerCase().indexOf(q) !== -1;
+            card.style.display = match ? '' : 'none';
+            if (match) anyVisible = true;
+          });
+          section.style.display = anyVisible ? '' : 'none';
+        });
+      });
+    }
+  });
+
+  // Highlight nav on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>

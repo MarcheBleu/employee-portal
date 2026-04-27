@@ -450,7 +450,7 @@
 </div>
 
 <div class="search-wrap">
-  <input class="search-input" type="search" id="menu-search" placeholder="Search menu items, ingredients…" oninput="filterMenu(this.value)" />
+  <input class="search-input" type="search" id="menu-search" placeholder="Search menu items, ingredients…" />
 </div>
 
 <main>
@@ -1116,4 +1116,90 @@
       <div class="wine-card">
         <h4>🥂 By the Pour</h4>
         <div class="wine-item">
-          <
+          <span class="wine-name">Chardonnay</span>
+          <span class="wine-producer">Diatom</span>
+          <span class="wine-desc">Lighter, refreshing</span>
+        </div>
+        <div class="wine-item">
+          <span class="wine-name">Sauvignon Blanc</span>
+          <span class="wine-producer">Allen Scott</span>
+          <span class="wine-desc">Crisp and zesty</span>
+        </div>
+      </div>
+
+      <div class="wine-card">
+        <h4>🍺 Beer On Tap</h4>
+        <div class="wine-item">
+          <span class="wine-name">Rahr &amp; Sons Blonde</span>
+          <span class="wine-desc">Lager</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ HAPPY HOUR ═══════════════════════════════ -->
+  <section id="happy-hour">
+    <h2>Happy Hour</h2>
+    <div class="hh-banner">
+      <h4>Happy Hour Schedule</h4>
+      <p style="font-size:.86rem;">Mon–Thur: 3pm–6pm &nbsp;|&nbsp; Fri: All day</p>
+      <div class="hh-deal">
+        <div class="hh-deal-item">🍷 All wine by the glass — 30% off</div>
+        <div class="hh-deal-item">🍺 All draft beer on tap — $5</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  function toggle(header) {
+    const card = header.closest('.card');
+    card.classList.toggle('open');
+  }
+
+  function togglePrep(header) {
+    const card = header.closest('.prep-recipe');
+    card.classList.toggle('open');
+  }
+
+  // Search / filter
+  document.addEventListener('DOMContentLoaded', function() {
+    var searchInput = document.getElementById('menu-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        var q = this.value.trim().toLowerCase();
+        document.querySelectorAll('section').forEach(function(section) {
+          var cards = section.querySelectorAll('.card, .prep-recipe');
+          if (cards.length === 0) {
+            section.style.display = '';
+            return;
+          }
+          var anyVisible = false;
+          cards.forEach(function(card) {
+            var match = !q || card.textContent.toLowerCase().indexOf(q) !== -1;
+            card.style.display = match ? '' : 'none';
+            if (match) anyVisible = true;
+          });
+          section.style.display = anyVisible ? '' : 'none';
+        });
+      });
+    }
+  });
+
+  // Highlight nav on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks  = document.querySelectorAll('nav a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>
